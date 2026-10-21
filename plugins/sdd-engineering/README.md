@@ -20,11 +20,12 @@ Installing it also installs its dependencies: `engineering-paved-path`,
   │
   ├─ S0 research (optional) ─ research-tools:researcher
   ├─ S1 spec ─────────────── sdd-engineering:spec-creator ──► <SDD folder>/<slug>/spec.md
-  │      ▼ G1: you approve the spec
+  │      ▼ G1: every requirement has an AC (scripts/check-spec.mjs) and you approve the spec
   ├─ S2 plan ─────────────── sdd-engineering:implementation-planner
-  ├─ S3 plan review ──────── implementation-planner MODE: REVIEW on another model
-  │      ▼ G2: you approve the plan and every APPROVAL REQUIRED item ──► plan.md
-  ├─ S4 implement ────────── sdd-engineering:implementer (code + the tests the plan names)
+  ├─ S3 plan review ──────── implementation-planner MODE: REVIEW on another model (logged)
+  │      ▼ G2: you approve the plan, every APPROVAL REQUIRED item and the commit mode ──► plan.md
+  ├─ S4 implement ────────── sdd-engineering:implementer, one task per call (code + named tests)
+  │      ▼ G4 per task (commit mode per-task): you ask for that task's commit
   ├─ S5 review ───────────── architecture-review:architecture-reviewer (fresh context)
   ├─ S6 verify ───────────── sdd-engineering:plan-verifier ──► verification.md
   │      ▼ G4: you ask for commits (never pushed or merged by the workflow)
@@ -37,7 +38,8 @@ Installing it also installs its dependencies: `engineering-paved-path`,
 | `implementation-planner` | agent | `MODE: PLAN` spec → plan where every task cites AC-IDs; `MODE: AD-HOC` plan without a spec; `MODE: REVIEW` cross-model plan review |
 | `implementer` | agent | executes approved tasks, writes the named tests, runs the project's unit checks |
 | `plan-verifier` | agent | last stage: AC → task → test → commit matrix with PASS / PARTIAL / MISSING |
-| `run-plan` | skill (manual) | the orchestrator and its gates |
+| `run-plan` | skill (manual) | the orchestrator, its gates and `run-log.md` (one row per subagent call: task, model, time, tokens, result) |
+| `scripts/check-spec.mjs` | script | requirement → acceptance-criterion coverage check run before G1 (Node.js, no dependencies) |
 | `workflow-retro` | skill (manual) | measured tokens, cache, tool calls and concurrency of a run → a ledger entry; bundles `scripts/retro-metrics.mjs` (Node.js, no dependencies) |
 | `engineering-insights` | skill | read/record verified per-area insights (`<area>/INSIGHTS.md`) |
 

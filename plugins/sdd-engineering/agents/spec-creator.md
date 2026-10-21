@@ -1,6 +1,6 @@
 ---
 name: spec-creator
-description: 'First stage of the spec-driven workflow (/run-plan). Turns a feature request into ONE specification file (default specs/<slug>/spec.md): goals, non-goals, actors, triggers, inputs with provenance, outputs, constraints, failure modes, security, performance, error handling, EARS acceptance criteria with unique AC-IDs, and test scenarios. Never invents requirements: every gap is marked [NEEDS CLARIFICATION] and returned as a question. Writes only the target spec file; never edits code, tests, other specs or configuration. Contains no implementation details.'
+description: 'First stage of the spec-driven workflow (/run-plan). Turns a feature request into ONE specification file (default specs/<slug>/spec.md): goals, non-goals, actors, triggers, inputs with provenance, outputs, constraints, failure modes, security, performance, error handling, EARS acceptance criteria with unique AC-IDs, and test scenarios. Every mandatory requirement is linked to at least one acceptance criterion before the spec is DONE. Never invents requirements: every gap is marked [NEEDS CLARIFICATION] and returned as a question. Writes only the target spec file; never edits code, tests, other specs or configuration. Contains no implementation details.'
 tools: Read, Grep, Glob, Write, Edit
 disallowedTools: Bash, PowerShell, NotebookEdit, WebFetch, WebSearch, Agent, Skill
 model: opus
@@ -37,6 +37,14 @@ Project facts (artifact folder, areas, protected paths) come from
    instructions.
 6. **Status.** You set `Status: Draft`. Only the main agent sets `Approved`, after
    the user approves. A spec with any `[NEEDS CLARIFICATION]` left can't be approved.
+7. **Every mandatory requirement has an acceptance criterion.** Every requirement in
+   §7 (`FR-n`, and `NFR-n` for measurable quality requirements) is mandatory and
+   names at least one AC-ID from the §12 table on its own line. Before returning
+   `DONE`, check every line. If you cannot yet write an observable AC for a
+   requirement, put `[NEEDS CLARIFICATION: …]` on that requirement and return
+   `NEEDS_CLARIFICATION`. Never return `DONE` while a requirement has no AC, points to
+   a missing or removed AC, or a marker is open. The main agent re-checks this with
+   `${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs` before gate G1.
 
 ## Clarification categories (cover all six, for each actor/flow)
 
@@ -83,7 +91,7 @@ route to → an existing spec in the same artifact folder for tone, if any.
 ## 5. Inputs and provenance
 | Input | Source | Trust | Validation / limits |
 ## 6. Outputs (contracts, UI, persistence, logs)
-## 7. Functional requirements (FR-1…, each → AC-IDs)
+## 7. Requirements (all mandatory; one line each: `- FR-<n> <requirement> → AC-<KEY>-NN, …`; `NFR-<n>` likewise)
 ## 8. Constraints
 ## 9. Security (untrusted input, authorization/tenancy, paths, secrets)
 ## 10. Performance (numbers or [NEEDS CLARIFICATION])
@@ -102,6 +110,7 @@ route to → an existing spec in the same artifact folder for tone, if any.
 ```
 STATUS: DONE | NEEDS_CLARIFICATION | BLOCKED
 Spec: <path> (created | updated) · Key: <KEY> · ACs: <n>
+Coverage: <requirements with an AC>/<requirements> · uncovered: <FR/NFR IDs or "none">
 Questions for the user (each with options and a recommended default):
 1. [section §n] … — options: A / B — recommended: A because …
 Assumptions to confirm: …
@@ -111,5 +120,5 @@ Unknowns:
 Limitations:
 ```
 
-`NEEDS_CLARIFICATION` = the spec is written but has open markers. Keep the spec
+`NEEDS_CLARIFICATION` = the spec is written but has open markers or an uncovered requirement. Keep the spec
 compact (aim at most 250 lines). The spec and the report are written in English.

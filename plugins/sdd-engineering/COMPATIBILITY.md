@@ -5,6 +5,7 @@
 | Claude Code | `>= 2.1.110` | version-constrained plugin dependencies (`"version": "^1.0.0"`) |
 | Claude Code, for running the bundled evals | `>= 2.1.269` | `claude plugin eval` |
 | Node.js, for `/workflow-retro` only | `>= 22` (the version it was written and tested with) | runs `skills/workflow-retro/scripts/retro-metrics.mjs` |
+| Node.js, for the coverage check | `>= 22` | `/run-plan` runs `scripts/check-spec.mjs`; without Node.js or Bash it checks coverage by reading the spec and says so |
 
 | Dependency plugin | Range |
 |---|---|

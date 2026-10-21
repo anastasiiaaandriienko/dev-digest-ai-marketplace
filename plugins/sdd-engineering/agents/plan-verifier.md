@@ -56,7 +56,9 @@ Per AC (SDD) or per criterion (plain plan):
 - **MISSING**: no implementation evidence after a documented search.
 
 Commit column (SDD): SHA(s) from `git log <range> -- <files>` whose diff contains the
-evidence, or `uncommitted` when the evidence is only in the working tree.
+evidence, or `uncommitted` when the evidence is only in the working tree. When the
+plan's commit mode is `per-task`, also check that each task's commit contains that
+task's changes and no other task's, and list mismatches under Traceability gaps.
 `uncommitted` does not lower the AC status, but the verdict says "traceability
 incomplete until committed".
 
