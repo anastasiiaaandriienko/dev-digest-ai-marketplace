@@ -42,7 +42,8 @@ Approval of one gate never covers the next one.
 | File | Written by | When |
 |---|---|---|
 | `spec.md` | `sdd-engineering:spec-creator`; main agent sets `Status: Approved (<date>)` | S1, at G1 |
-| `plan.md` | main agent (approved plan verbatim + `Status: Approved (<date>)` + review verdict) | at G2 |
+| `plan.draft.md` | main agent (the planner's latest plan, verbatim) | S2, rewritten on every rework round |
+| `plan.md` | main agent (`plan.draft.md` + `Status: Approved (<date>)` + review verdict) | at G2 |
 | `verification.md` | main agent (plan-verifier report verbatim) | S6 |
 | `run-log.md` | main agent, one row per subagent call | every stage |
 
@@ -63,19 +64,20 @@ questions → run it again with the answers. Research requests → S0. Repeat un
 `DONE`. → **G1**.
 
 **S2 — plan** · `sdd-engineering:implementation-planner` (prompt: spec path, profile
-facts, constraints, approvals already known). `SPEC_GAP` → back to S1 with the gap.
-`BLOCKED` → fix the input.
+facts, constraints, approvals already known). `READY` → write the returned plan verbatim
+to `plan.draft.md`. `SPEC_GAP` → back to S1 with the gap. `BLOCKED` → fix the input.
 
 **S3 — cross-model review** · `sdd-engineering:implementation-planner` with
-`MODE: REVIEW`, the spec path and the draft plan verbatim, on a **different model**
+`MODE: REVIEW`, the spec path and the `plan.draft.md` path, on a **different model**
 than S2 (Agent `model` override). Verdict `rework` or any blocker → S2 again with the
-findings (at most 2 rounds, then ask the user). Present plan + review verdict +
-approvals required → **G2** → save `plan.md`.
+`plan.draft.md` path and the review findings; rewrite `plan.draft.md` with the result
+(at most 2 rounds, then ask the user). Present a short plan summary + review verdict +
+approvals required → **G2** → save `plan.md` from `plan.draft.md`.
 
-**S4 — implement** · `sdd-engineering:implementer` (prompt: `plan.md` verbatim, task
-IDs in plan order, profile facts, approvals granted at G2/G3). It writes the tests the
-plan names. `BLOCKED` → answer or return to the user. Run dependent tasks
-sequentially; area checks never in parallel.
+**S4 — implement** · `sdd-engineering:implementer` (prompt: `plan.md` path, task IDs in
+plan order, profile facts, approvals granted at G2/G3). It writes the tests the plan
+names. `BLOCKED` → answer or return to the user. Run dependent tasks sequentially; area
+checks never in parallel.
 
 **S5 — architecture review** · build the REVIEW PACKET (plan, task IDs, ACs, base
 ref, changed files, approvals; no author reasoning) and run
@@ -95,7 +97,9 @@ range if the user wants the commit column filled. Then mention that
 
 - One feature per run. Follow the project instructions (protected paths, no
   installs, no paid calls); this skill grants no extra permission.
-- Hand off artifacts verbatim; don't summarise a spec or plan into a subagent prompt.
+- Hand off artifacts **by path** (`spec.md`, `plan.draft.md`, `plan.md`): subagents read
+  the file themselves. Never paste or summarise a spec or plan into a subagent prompt;
+  pass review findings and user answers as text.
 - Never mark a stage done on a subagent's say-so alone when its report says
   `PARTIAL`, `BLOCKED` or lists failing checks.
 - Not for unrelated requests: if the user's request is not a feature to specify and

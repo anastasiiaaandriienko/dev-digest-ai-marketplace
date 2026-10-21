@@ -24,3 +24,6 @@ release tags are `sdd-engineering--v<version>`.
   the implementer writes the tests the plan names, and the review gate is
   `architecture-review:architecture-reviewer`.
 - Defined behaviour when the host repository has no test command.
+- `/run-plan` hands artifacts to subagents by path: the planner's draft is saved as
+  `plan.draft.md` and the review, rework and implementer stages read the file instead
+  of receiving the pasted plan (cost optimization; see docs/COST-BASELINE.md).
