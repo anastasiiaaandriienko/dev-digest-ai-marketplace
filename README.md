@@ -12,7 +12,7 @@ plugins, skills and agents, read their docs, see dependencies and copy install c
 
 | Plugin | Version | What it gives you | Depends on |
 |---|---|---|---|
-| [`sdd-engineering`](plugins/sdd-engineering/README.md) | 1.0.0 | `/run-plan`: spec → plan → implement → review → verify with approval gates; `/workflow-retro`; `engineering-insights` | the three below |
+| [`sdd-engineering`](plugins/sdd-engineering/README.md) | 1.1.1 | `/run-plan`: spec → plan → implement → review → verify with approval gates; `/workflow-retro`; `engineering-insights` | the three below |
 | [`architecture-review`](plugins/architecture-review/README.md) | 1.0.0 | read-only `architecture-reviewer` agent driven by your repository's architecture docs | `engineering-paved-path` |
 | [`research-tools`](plugins/research-tools/README.md) | 1.0.0 | read-only `researcher` agent with file:line and URL evidence | — |
 | [`engineering-paved-path`](plugins/engineering-paved-path/README.md) | 1.0.0 | shared skills: onion architecture, Fastify, Drizzle, PostgreSQL, Zod | — |
@@ -28,7 +28,7 @@ graph TD
 ```
 
 ```
-sdd-engineering@1.0.0
+sdd-engineering@1.1.1
 ├── engineering-paved-path@^1.0.0
 ├── research-tools@^1.0.0
 └── architecture-review@^1.0.0
