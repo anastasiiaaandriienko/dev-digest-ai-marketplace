@@ -1,0 +1,46 @@
+name: Validate marketplace
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Structure lint and its tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Lint (scripts/validate-marketplace.mjs)
+        run: npm run validate
+      - name: Lint tests
+        run: npm test
+
+  claude-validate:
+    name: claude plugin validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Only the validator is used here: it reads manifests and makes no model calls,
+      # so no API key is needed. The CLI version is pinned so --strict behaves the same
+      # in CI and locally; bump it deliberately together with COMPATIBILITY.md.
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.306
+      - name: Validate the marketplace
+        run: claude plugin validate . --strict
+      - name: Validate each plugin
+        run: |
+          for dir in plugins/*/; do
+            echo "::group::$dir"
+            claude plugin validate "$dir" --strict
+            echo "::endgroup::"
+          done

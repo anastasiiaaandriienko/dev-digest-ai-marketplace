@@ -1,0 +1,9 @@
+{
+  "name": "engineering-paved-path",
+  "version": "1.0.0",
+  "description": "Shared engineering skills for the team harness: layered (onion) architecture, Fastify, Drizzle ORM, PostgreSQL table design and Zod. One source for technical skills that other plugins reference by namespaced name.",
+  "author": { "name": "anastasiiaaandriienko" },
+  "repository": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace",
+  "license": "MIT",
+  "keywords": ["architecture", "fastify", "drizzle", "postgresql", "zod", "skills"]
+}

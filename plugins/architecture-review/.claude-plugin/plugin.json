@@ -1,0 +1,12 @@
+{
+  "name": "architecture-review",
+  "version": "1.0.0",
+  "description": "Generalized read-only architecture reviewer agent. Reviews a change against the repository's own architecture docs and the engineering-paved-path skills; every finding cites file:line.",
+  "author": { "name": "anastasiiaaandriienko" },
+  "repository": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace",
+  "license": "MIT",
+  "keywords": ["review", "architecture", "agents"],
+  "dependencies": [
+    { "name": "engineering-paved-path", "version": "^1.0.0" }
+  ]
+}

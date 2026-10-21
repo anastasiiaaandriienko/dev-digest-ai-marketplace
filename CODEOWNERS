@@ -1,0 +1,15 @@
+# Every change needs a review from the owners of the affected path.
+# Replace or extend with team handles when more maintainers join; enforce with a
+# branch ruleset that requires code-owner review on main.
+
+*                                   @anastasiiaaandriienko
+
+/.claude-plugin/                    @anastasiiaaandriienko
+/.github/                           @anastasiiaaandriienko
+/docs/SECURITY.md                   @anastasiiaaandriienko
+/docs/RELEASES.md                   @anastasiiaaandriienko
+
+/plugins/engineering-paved-path/    @anastasiiaaandriienko
+/plugins/research-tools/            @anastasiiaaandriienko
+/plugins/architecture-review/       @anastasiiaaandriienko
+/plugins/sdd-engineering/           @anastasiiaaandriienko
