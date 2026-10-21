@@ -67,7 +67,12 @@ The marketplace entry in `.claude-plugin/marketplace.json` carries only `name`,
 npm run validate          # our lint: names, sources, versions, dependencies, namespaced references, forbidden content
 npm test                  # tests for the lint
 claude plugin validate .  # Claude Code's schema validation of the marketplace and every plugin
+cd site && npm ci && npm test && npm run build   # when the catalog site or the index changes
 ```
+
+The catalog site picks up new plugins, skills and agents automatically: the index is
+rebuilt from the repository on every Pages deployment. See
+[docs/SITE-SPEC.md](docs/SITE-SPEC.md).
 
 Behavior evals (`claude plugin eval`) run real model sessions and cost money; run them
 for the plugin you changed before asking for a release, and attach the summary to the
