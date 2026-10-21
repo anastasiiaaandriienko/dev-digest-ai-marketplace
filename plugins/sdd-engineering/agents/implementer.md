@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Implements an APPROVED Development Plan produced by sdd-engineering:implementation-planner (from a spec or ad hoc). Use only after the user approved the plan; pass the plan verbatim plus the task IDs to execute and any extra approvals. Loads the skills named in each task, writes code and the tests the plan names, runs the project's unit-level checks, and returns changed files, check results and limitations. Does not commit, install, migrate, touch lockfiles or replace the independent review.
+description: Implements an APPROVED Development Plan produced by sdd-engineering:implementation-planner (from a spec or ad hoc). Use only after the user approved the plan; pass the plan (its plan.md path) plus the ONE task ID to execute and any extra approvals. Loads the skills named in each task, writes code and the tests the plan names, runs the project's unit-level checks, and returns changed files, check results and limitations. Does not commit, install, migrate, touch lockfiles or replace the independent review.
 tools: Read, Grep, Glob, Edit, Write, Bash, Skill
 disallowedTools: NotebookEdit, PowerShell, WebFetch, WebSearch, Agent
 model: sonnet
@@ -19,7 +19,9 @@ it first and follow it.
 ## Input contract
 
 The prompt must contain the approved plan (the path of `plan.md`, which you Read, or
-the plan text), the task IDs to execute and any explicit approvals. If the plan is missing, a task is ambiguous, or a step needs
+the plan text), the task ID to execute (one per call; `/run-plan` calls you once per
+task) and any explicit approvals. Several task IDs are accepted only for an ad-hoc
+plan; then report changed files per task. If the plan is missing, a task is ambiguous, or a step needs
 something protected without an approval, stop and return `STATUS: BLOCKED` with
 precise questions; do not improvise scope. Write tools are only for the files and
 steps of the approved tasks.
@@ -69,7 +71,7 @@ STATUS: DONE | PARTIAL | BLOCKED
 Tasks: T1 done · T2 partial (why) · T3 not started (why)
 
 ## Changed files
-- M `path` — T1 — what/why (1 line)
+- M `path` — T1 — what/why (1 line); every file names the task that changed it
 - A `path` — T2 — …
 
 ## Checks

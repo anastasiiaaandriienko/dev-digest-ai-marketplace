@@ -54,23 +54,69 @@ marketplace in the user's settings, Claude Code refreshes the catalog at start-u
 
 ## Channels
 
-| Channel | Marketplace | Tracks |
-|---|---|---|
-| latest | `dev-digest-ai-marketplace` (this repository, `main`) | the newest released versions |
-| stable | a second marketplace entry pinned to the `ref`/SHA of a verified release | the last version that passed the smoke eval |
+| Channel | Marketplace name | Added with | Serves |
+|---|---|---|---|
+| latest | `dev-digest-ai-marketplace` | `claude plugin marketplace add anastasiiaaandriienko/dev-digest-ai-marketplace` | whatever is on `main` (relative sources); dependency ranges resolve to the highest matching release tag |
+| stable | `dev-digest-ai-marketplace-stable` | `claude plugin marketplace add https://raw.githubusercontent.com/anastasiiaaandriienko/dev-digest-ai-marketplace/main/channels/stable/.claude-plugin/marketplace.json` | every plugin pinned to a verified release tag **and** its commit SHA (`git-subdir` sources) |
+
+The stable channel lives in `channels/stable/.claude-plugin/marketplace.json`. It has its own
+name because a user can register only one marketplace per name. It lists every
+dependency of the plugins it serves, because dependencies resolve inside the same
+marketplace. `npm run validate` checks this, plus the tag-shaped `ref` and the 40-character `sha`.
+
+Moving stable to a new release is a separate pull request. Change `ref` and `sha`, run
+the rehearsal below against the new pins, and merge only after the smoke eval passes.
+Merging a release to `main` never changes stable.
+
+Main is the latest channel. A merged but untagged version is already served to latest
+users, so tag right after the merge (see the checklist).
 
 ## Rollback
 
-There is no `plugin rollback` command. Roll back by switching channels:
+There is no `plugin rollback` command. You roll back by switching channels. In the
+affected project:
 
-1. Prepare the stable channel once: a marketplace whose plugin `source` points to this
-   repository at the verified tag (for example `sdd-engineering--v1.0.0`) or its SHA.
-2. Disable or uninstall the plugin from the latest channel.
-3. Install the same plugin from the stable channel; run `/reload-plugins`.
-4. Run the smoke eval and record the result.
-5. Return to latest only after a fixed version is released and its evals pass.
+```sh
+# 1. Leave latest: remove the plugin and the dependencies it auto-installed; keep plugin data.
+claude plugin uninstall sdd-engineering@dev-digest-ai-marketplace --scope project --keep-data --prune -y
+# 2. Add the stable channel (once) and install from it.
+claude plugin marketplace add https://raw.githubusercontent.com/anastasiiaaandriienko/dev-digest-ai-marketplace/main/channels/stable/.claude-plugin/marketplace.json --scope project
+claude plugin install sdd-engineering@dev-digest-ai-marketplace-stable --scope project
+# 3. Confirm the version that actually loads, then /reload-plugins (or start a new session).
+claude plugin list --json        # sdd-engineering@dev-digest-ai-marketplace-stable → "version": "1.0.0"
+# 4. Smoke eval (paid): the fixed scenario against the stable copy; record the result.
+```
 
-Before rolling back, check what the bad version may have changed outside the plugin
-(files in projects, settings) and restore it; plugin data in `${CLAUDE_PLUGIN_DATA}`
-must not be deleted by a channel switch. The exact command sequence is rehearsed and
-recorded when the first rollback test is run.
+To return to latest after a fixed version is released and its evals pass, run the same
+steps the other way round: uninstall `@dev-digest-ai-marketplace-stable` with
+`--keep-data --prune -y`, then install `@dev-digest-ai-marketplace`.
+
+**Plugin data.** `${CLAUDE_PLUGIN_DATA}` is `~/.claude/plugins/data/<plugin>@<marketplace>/`,
+so each channel has its own data folder. `--keep-data` keeps the latest channel's folder
+for the return trip. Data is not copied between channels. sdd-engineering stores
+nothing there: its state is the SDD artifacts in the host repository (`specs/<slug>/`),
+and a channel switch never touches them.
+
+**External state.** sdd-engineering writes only the SDD folder and the files of approved
+tasks. It commits only at G4 and never pushes. Before switching, check `git status`
+in the host repository. Uncommitted work from the bad version is reverted with git like
+any other change. The plugin changed no settings outside the project.
+
+### Rehearsal (free, isolated)
+
+`scripts/rehearse-rollback.mjs` runs latest → stable → latest. It uses a throwaway
+`CLAUDE_CONFIG_DIR` and project, so your own plugins are untouched. It asserts the
+installed version from `claude plugin list --json`, the commit from
+`installed_plugins.json`, the installed copy's `plugin.json`, that no plugin of the
+channel you left stays installed, and that plugin data survives the round trip. It
+makes no model calls.
+
+```sh
+node scripts/rehearse-rollback.mjs \
+  --latest anastasiiaaandriienko/dev-digest-ai-marketplace \
+  --stable https://raw.githubusercontent.com/anastasiiaaandriienko/dev-digest-ai-marketplace/main/channels/stable/.claude-plugin/marketplace.json \
+  --expect-latest 1.1.0 --expect-stable 1.0.0 --stable-sha 30809ef0df39eb4510c05bc40c4819668b0b3a91
+```
+
+The smoke eval after a rollback is paid. Run it only with an approved budget, and record
+it with the rehearsal output in the release pull request.

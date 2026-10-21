@@ -11,6 +11,13 @@ never seen.
 | `spec-from-request` | fixed SDD scenario, stage 1: "prepare a spec for a small feature" | `sdd-engineering:spec-creator` runs; `specs/todo-due-dates/spec.md` is created with EARS ACs; no source file is created; the workflow stops at gate G1 |
 | `plan-from-approved-spec` | fixed SDD scenario, stage 2: an approved spec exists | `sdd-engineering:implementation-planner` runs; the plan cites AC-IDs and uses the project's test command; no source file is created before gate G2 |
 | `negative-unrelated-request` | a plain code question | no SDD subagent, no `run-plan`, no `specs/` file |
+| `legacy-spec-uncovered-requirement` (1.1.0) | `--from plan` on a spec approved under 1.0.0 rules whose FR-3 has no AC | the planner is not called; no plan file and no code; the reply names FR-3 and sends the spec back |
+
+1.1.0 graders on the positive cases: every `FR-n`/`NFR-n` line of the spec names an AC
+(`requirements-covered`, `requirements-listed`); `run-log.md` has the S1 spec-creator row
+with a model (`run-log-from-s1`); the S3 review call passes a non-Opus `model` override and
+is logged with it (`review-on-other-model`, `run-log-review-model`). The regex and
+`tool_used` patterns are unit-tested offline in `scripts/test/sdd-graders.test.mjs`.
 
 ## Running (paid)
 
@@ -23,6 +30,8 @@ Run **from the repository root**:
 ```sh
 # free load check (the cost ceiling is checked before the first run starts)
 claude plugin eval . --eval-dir plugins/sdd-engineering/evals --scaffold --allow-tools Write Edit --trust-plugin --no-publish --max-cost-usd 0
+# 1.1.0 behaviour only (the negative case), one run
+claude plugin eval . --eval-dir plugins/sdd-engineering/evals --scaffold --tag v1.1 --runs 1 --ablation none --allow-tools Write Edit --trust-plugin --no-publish --max-cost-usd 1
 # the fixed SDD scenario (spec + plan), one run each, no baseline arm
 claude plugin eval . --eval-dir plugins/sdd-engineering/evals --scaffold --tag positive --runs 1 --ablation none --allow-tools Write Edit --trust-plugin --no-publish --max-cost-usd 2
 ```

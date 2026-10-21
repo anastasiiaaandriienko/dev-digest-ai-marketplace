@@ -1,6 +1,6 @@
 {
   "name": "sdd-engineering",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Spec-driven development workflow: spec-creator, implementation-planner, implementer and plan-verifier agents, orchestrated by /run-plan with approval gates; engineering-insights; and /workflow-retro for measured token and tool-call retrospectives.",
   "author": { "name": "anastasiiaaandriienko" },
   "repository": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace",

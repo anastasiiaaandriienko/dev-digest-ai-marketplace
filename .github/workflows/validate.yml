@@ -37,6 +37,13 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code@2.1.306
       - name: Validate the marketplace
         run: claude plugin validate . --strict
+      - name: Validate the release channels
+        run: |
+          for dir in channels/*/; do
+            echo "::group::$dir"
+            claude plugin validate "$dir" --strict
+            echo "::endgroup::"
+          done
       - name: Validate each plugin
         run: |
           for dir in plugins/*/; do

@@ -63,7 +63,21 @@ claude plugin marketplace update dev-digest-ai-marketplace
 claude plugin update sdd-engineering@dev-digest-ai-marketplace --scope project
 ```
 
-Release, update and rollback rules are in [docs/RELEASES.md](docs/RELEASES.md).
+### Stable channel and rollback
+
+`channels/stable/` is a second marketplace, `dev-digest-ai-marketplace-stable`. Every
+plugin in it is pinned to a verified release tag and commit, so it keeps serving that
+version after `main` moves on. To roll back, uninstall the plugin from the latest
+channel and install it from stable:
+
+```sh
+claude plugin uninstall sdd-engineering@dev-digest-ai-marketplace --scope project --keep-data --prune -y
+claude plugin marketplace add https://raw.githubusercontent.com/anastasiiaaandriienko/dev-digest-ai-marketplace/main/channels/stable/.claude-plugin/marketplace.json --scope project
+claude plugin install sdd-engineering@dev-digest-ai-marketplace-stable --scope project
+```
+
+Release, update and rollback rules, and the rollback rehearsal script, are in
+[docs/RELEASES.md](docs/RELEASES.md).
 
 ## Repository layout
 
@@ -73,8 +87,10 @@ plugins/<name>/                   one directory per plugin
   .claude-plugin/plugin.json      the plugin's source of truth: name, version, dependencies
   agents/  skills/  evals/        components and behavior evals
   README.md  CHANGELOG.md         required for every plugin
+channels/stable/                  stable channel: the same plugins pinned to release tags and commits
 docs/                             guidelines, security, releases, cost baseline, catalog site spec
 scripts/validate-marketplace.mjs  structure and content lint (complements `claude plugin validate`)
+scripts/rehearse-rollback.mjs     latest → stable → latest rehearsal in a throwaway config (no model calls)
 scripts/build-index.mjs           catalog data: index.json, releases.json, stats.json, Markdown bodies
 scripts/test/                     tests for the lint and the index builder
 site/                             catalog site (React + TypeScript + Vite), see docs/SITE-SPEC.md

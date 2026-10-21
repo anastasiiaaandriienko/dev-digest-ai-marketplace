@@ -19,7 +19,7 @@ A fact found nowhere is `UNKNOWN`; never invent one.
 | Input | Where it comes from | Default |
 |---|---|---|
 | SDD artifact folder | prompt, or a project instruction naming the SDD/spec folder | `specs/<slug>/` at the repository root |
-| Artifacts | — | `spec.md`, `plan.md`, `verification.md`, `run-log.md` in that folder |
+| Artifacts | — | `spec.md`, `plan.md`, `verification.md`, `run-log.md` in that folder; requirement coverage of `spec.md` is checked with `${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs` |
 | Areas (packages/modules) | project instructions; else top-level source directories | the repository as one area |
 | Check commands | project instructions; else manifest scripts named like `typecheck`, `lint`, `test` | none → see "No check command" |
 | Protected paths | project instructions + the defaults below | the defaults below |

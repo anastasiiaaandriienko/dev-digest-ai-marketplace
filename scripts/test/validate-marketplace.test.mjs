@@ -190,6 +190,35 @@ test('eval cases must load the plugin under test explicitly', () => {
   assert.ok(has(errorsOf(files('plugins: ["../../../base"]\n')), 'plugins must load "app" (the plugin under test)'));
 });
 
+test('release channels are pinned to a release tag and commit and list their dependencies', () => {
+  const sha = 'a'.repeat(40);
+  const pinned = (name, extra = {}) => ({
+    name,
+    source: { source: 'git-subdir', url: 'https://example.com/repo.git', path: `plugins/${name}`, ref: `${name}--v1.0.0`, sha, ...extra },
+  });
+  const channel = (plugins, name = 'demo-market-stable') =>
+    JSON.stringify({ name, owner: { name: 'team' }, plugins });
+  const path = 'channels/stable/.claude-plugin/marketplace.json';
+  assert.deepEqual(errorsOf({ [path]: channel([pinned('base'), pinned('app')]) }), []);
+  const errors = errorsOf({
+    [path]: channel(
+      [
+        pinned('app', { ref: 'main', sha: 'abc123' }),
+        { name: 'ghost', source: './plugins/ghost' },
+        { name: 'base', source: './plugins/base' },
+      ],
+      'demo-market',
+    ),
+  });
+  const joined = errors.join('\n');
+  assert.match(joined, /name must be "demo-market-stable"/);
+  assert.match(joined, /plugins\[app\]: ref must be a release tag "app--v<version>"/);
+  assert.match(joined, /plugins\[app\]: sha must be the full 40-character commit/);
+  assert.match(joined, /plugins\[ghost\]: is not a plugin of the root marketplace/);
+  assert.match(joined, /plugins\[base\]: source must be a pinned git source/);
+  assert.match(errorsOf({ [path]: channel([pinned('app')]) }).join('\n'), /dependency "base" must be listed in this channel too/);
+});
+
 test('frontmatter parser reads top-level keys and ignores files without it', () => {
   assert.deepEqual(frontmatter('---\nname: x\ndescription: "y"\n---\nbody'), { name: 'x', description: 'y' });
   assert.equal(frontmatter('no frontmatter'), null);

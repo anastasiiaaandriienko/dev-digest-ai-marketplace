@@ -52,8 +52,9 @@ The prompt names the mode: `MODE: PLAN` (default when a spec path is given),
   whose header says `Status: Approved`. Missing, not approved, or still containing
   `[NEEDS CLARIFICATION]` → `STATUS: BLOCKED`. Do not re-clarify product
   requirements, add features or drop ACs. A technical fact that contradicts the spec,
-  or an AC that can't be built as written → `STATUS: SPEC_GAP` with the AC-ID and
-  evidence; the spec is fixed by spec-creator, not by you.
+  an AC that can't be built as written, or a requirement (`FR-n` / `NFR-n`) that names
+  no existing AC-ID → `STATUS: SPEC_GAP` with the requirement or AC-ID and evidence; the
+  spec is fixed by spec-creator, not by you.
 - **Traceability.** Every task lists at least one AC-ID. Every AC is covered by at
   least one task, and every AC verified by `unit` has a task that names its test
   file. No task without an AC: fold such work into a task that needs it.

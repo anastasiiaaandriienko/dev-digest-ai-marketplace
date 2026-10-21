@@ -283,6 +283,42 @@ export function validateMarketplace(root) {
     }
   }
 
+  // ---- release channels (channels/<channel>/.claude-plugin/marketplace.json) ----
+  // A channel is a second marketplace whose entries are pinned to a release tag and its
+  // commit, so it keeps serving that version when main moves on (docs/RELEASES.md).
+  const channelsDir = join(root, 'channels');
+  if (existsSync(channelsDir)) {
+    for (const ch of readdirSync(channelsDir)) {
+      if (!statSync(join(channelsDir, ch)).isDirectory()) continue;
+      const chPath = join(channelsDir, ch, '.claude-plugin', 'marketplace.json');
+      const cm = readJson(chPath, err, rel);
+      if (!cm) continue;
+      const where = rel(chPath);
+      if (cm.name !== `${mp.name}-${ch}`) err(where, `name must be "${mp.name}-${ch}" (one marketplace name per channel)`);
+      if (!cm.owner?.name) err(where, 'owner.name is required');
+      const entries = Array.isArray(cm.plugins) ? cm.plugins : [];
+      const listed = new Set(entries.map((e) => e?.name));
+      for (const e of entries) {
+        const at = `${where} plugins[${e?.name ?? '?'}]`;
+        if (!plugins.has(e?.name)) {
+          err(at, 'is not a plugin of the root marketplace');
+          continue;
+        }
+        const s = e.source;
+        if (typeof s !== 'object' || !['git-subdir', 'github', 'url'].includes(s?.source)) {
+          err(at, 'source must be a pinned git source (git-subdir, github or url), not a relative path');
+          continue;
+        }
+        if (!new RegExp(`^${e.name}--v\\d+\\.\\d+\\.\\d+$`).test(s.ref ?? '')) err(at, `ref must be a release tag "${e.name}--v<version>"`);
+        if (!/^[0-9a-f]{40}$/.test(s.sha ?? '')) err(at, 'sha must be the full 40-character commit of the release tag');
+        if (s.source === 'git-subdir' && s.path !== `plugins/${e.name}`) err(at, `path must be "plugins/${e.name}"`);
+        for (const d of depsOf(e.name)) {
+          if (!listed.has(d)) err(at, `dependency "${d}" must be listed in this channel too (dependencies resolve within the same marketplace)`);
+        }
+      }
+    }
+  }
+
   return { errors, warnings };
 }
 

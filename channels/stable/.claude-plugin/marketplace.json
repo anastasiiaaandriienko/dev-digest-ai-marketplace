@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "dev-digest-ai-marketplace-stable",
+  "description": "Stable channel of dev-digest-ai-marketplace: every plugin pinned to its last verified release tag and commit. Use it to roll back from the latest channel.",
+  "owner": {
+    "name": "anastasiiaaandriienko"
+  },
+  "plugins": [
+    {
+      "name": "engineering-paved-path",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace.git",
+        "path": "plugins/engineering-paved-path",
+        "ref": "engineering-paved-path--v1.0.0",
+        "sha": "30809ef0df39eb4510c05bc40c4819668b0b3a91"
+      },
+      "description": "Shared engineering skills: layered (onion) architecture, Fastify, Drizzle ORM, PostgreSQL table design and Zod.",
+      "category": "development",
+      "tags": [
+        "architecture",
+        "backend",
+        "typescript",
+        "skills"
+      ]
+    },
+    {
+      "name": "research-tools",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace.git",
+        "path": "plugins/research-tools",
+        "ref": "research-tools--v1.0.0",
+        "sha": "30809ef0df39eb4510c05bc40c4819668b0b3a91"
+      },
+      "description": "Read-only researcher agent that answers codebase and external-documentation questions with file:line and URL evidence.",
+      "category": "productivity",
+      "tags": [
+        "research",
+        "agents",
+        "read-only"
+      ]
+    },
+    {
+      "name": "architecture-review",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace.git",
+        "path": "plugins/architecture-review",
+        "ref": "architecture-review--v1.0.0",
+        "sha": "30809ef0df39eb4510c05bc40c4819668b0b3a91"
+      },
+      "description": "Read-only architecture reviewer agent that checks a change against the repository's own architecture docs and the shared engineering skills.",
+      "category": "development",
+      "tags": [
+        "review",
+        "architecture",
+        "agents"
+      ]
+    },
+    {
+      "name": "sdd-engineering",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace.git",
+        "path": "plugins/sdd-engineering",
+        "ref": "sdd-engineering--v1.0.0",
+        "sha": "30809ef0df39eb4510c05bc40c4819668b0b3a91"
+      },
+      "description": "Spec-driven development workflow: spec-creator, implementation-planner, implementer and plan-verifier agents orchestrated by /run-plan, with approval gates, evals and a token retrospective.",
+      "category": "development",
+      "tags": [
+        "sdd",
+        "workflow",
+        "agents",
+        "planning"
+      ]
+    }
+  ]
+}
