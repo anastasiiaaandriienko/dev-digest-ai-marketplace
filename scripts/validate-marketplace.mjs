@@ -244,6 +244,23 @@ export function validateMarketplace(root) {
         const types = ['regex', 'tool_used', 'tool_order', 'file_exists', 'llm', 'baseline'];
         if (!fm?.type || !types.includes(fm.type)) err(rel(join(gradersDir, g)), `grader type must be one of ${types.join(', ')}`);
       }
+      // `claude plugin eval` loads case `plugins` only from inside the plugin under test
+      // (its containment root); cross-plugin cases live in the repository-level evals/.
+      const pluginsLine = caseYaml?.match(/^plugins\s*:\s*(\[.*\])\s*$/m)?.[1];
+      if (pluginsLine) {
+        let entries = [];
+        try {
+          entries = JSON.parse(pluginsLine);
+        } catch {
+          err(`${where}/case.yaml`, 'plugins must be a JSON-style list of quoted paths');
+        }
+        for (const entry of entries) {
+          const target = resolve(caseDir, entry);
+          if (target !== p.dir && !target.startsWith(p.dir + sep)) {
+            err(`${where}/case.yaml`, `plugins entry "${entry}" leaves plugins/${name}; put cross-plugin cases in the repository-level evals/`);
+          }
+        }
+      }
       const scaffold = caseYaml?.match(/^\s*scaffold_script\s*:\s*(\S+)/m)?.[1];
       if (scaffold && !existsSync(join(caseDir, scaffold))) err(where, `scaffold_script ${scaffold} does not exist`);
       if (caseYaml && !/^schema_version\s*:\s*"?1\.1"?/m.test(caseYaml)) err(`${where}/case.yaml`, 'schema_version "1.1" is required');
