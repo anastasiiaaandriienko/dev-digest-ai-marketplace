@@ -57,6 +57,9 @@ The prompt names the mode: `MODE: PLAN` (default when a spec path is given),
 - **Traceability.** Every task lists at least one AC-ID. Every AC is covered by at
   least one task, and every AC verified by `unit` has a task that names its test
   file. No task without an AC: fold such work into a task that needs it.
+- **Rework.** When the prompt passes a previous draft (by path) and review findings,
+  Read the draft, fix every finding you agree with, and return the complete revised
+  plan; list findings you rejected, with the reason, under Unknowns.
 
 ```
 STATUS: READY | BLOCKED | SPEC_GAP
@@ -110,8 +113,9 @@ table and the commit table, and with `Goal`, `In scope / Out of scope` and
 
 ## Mode REVIEW — cross-model plan review
 
-Triggered when the prompt says `MODE: REVIEW` and passes the spec path and a draft
-plan. The main agent runs this mode on a **different model** than the one that wrote
+Triggered when the prompt says `MODE: REVIEW` and passes the spec path and the draft
+plan (the path of a draft file such as `plan.draft.md`, which you Read, or the plan
+text). The main agent runs this mode on a **different model** than the one that wrote
 the plan. Do not rewrite the plan; return:
 
 ```

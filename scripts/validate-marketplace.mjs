@@ -247,6 +247,9 @@ export function validateMarketplace(root) {
       // `claude plugin eval` loads case `plugins` only from inside the plugin under test
       // (its containment root); cross-plugin cases live in the repository-level evals/.
       const pluginsLine = caseYaml?.match(/^plugins\s*:\s*(\[.*\])\s*$/m)?.[1];
+      // Auto-detection of the plugin under test is not reliable: without an explicit
+      // `plugins` entry a run can silently start with no plugin loaded.
+      if (!pluginsLine) err(`${where}/case.yaml`, 'set `plugins: ["../.."]` so the plugin under test is loaded explicitly');
       if (pluginsLine) {
         let entries = [];
         try {
@@ -254,10 +257,23 @@ export function validateMarketplace(root) {
         } catch {
           err(`${where}/case.yaml`, 'plugins must be a JSON-style list of quoted paths');
         }
+        // A plugin whose dependencies are not loaded is disabled (dependency-unsatisfied),
+        // and the eval then runs with no plugin at all. Load the plugin and its whole
+        // dependency closure, from this repository's plugins/ only.
+        const pluginsRoot = join(root, 'plugins');
+        const loaded = new Set();
         for (const entry of entries) {
           const target = resolve(caseDir, entry);
-          if (target !== p.dir && !target.startsWith(p.dir + sep)) {
-            err(`${where}/case.yaml`, `plugins entry "${entry}" leaves plugins/${name}; put cross-plugin cases in the repository-level evals/`);
+          const owner = [...plugins].find(([, q]) => q.dir === target)?.[0];
+          if (!owner) {
+            err(`${where}/case.yaml`, `plugins entry "${entry}" is not a plugin directory under ${rel(pluginsRoot)}/`);
+          } else loaded.add(owner);
+        }
+        const closure = new Set([name]);
+        for (const n of closure) for (const d of depsOf(n)) if (plugins.has(d)) closure.add(d);
+        for (const needed of closure) {
+          if (!loaded.has(needed)) {
+            err(`${where}/case.yaml`, `plugins must load "${needed}"${needed === name ? ' (the plugin under test)' : ` (a dependency of ${name}; without it ${name} is disabled)`}`);
           }
         }
       }

@@ -168,14 +168,26 @@ test('eval cases need a prompt, graders with a known type and an existing scaffo
   assert.ok(has(errors, 'scaffold_script missing.sh does not exist'));
 });
 
-test('eval cases may load plugins only from inside their own plugin', () => {
+test('eval cases load the plugin and its whole dependency closure, from plugins/ only', () => {
   const caseFiles = (plugins) => ({
     'plugins/app/evals/c/case.yaml': `schema_version: "1.1"\nname: c\nplugins: ${plugins}\n`,
     'plugins/app/evals/c/prompt.md': '---\nmax_turns: 1\n---\nhi',
     'plugins/app/evals/c/graders/g.md': '---\ntype: llm\n---\nok',
   });
-  assert.ok(has(errorsOf(caseFiles('["../..", "../../../base"]')), 'leaves plugins/app'));
-  assert.deepEqual(errorsOf(caseFiles('["../.."]')), []);
+  // app depends on base: loading app alone disables it.
+  assert.ok(has(errorsOf(caseFiles('["../.."]')), 'plugins must load "base" (a dependency of app'));
+  assert.ok(has(errorsOf(caseFiles('["../..", "../../../../elsewhere"]')), 'is not a plugin directory'));
+  assert.deepEqual(errorsOf(caseFiles('["../..", "../../../base"]')), []);
+});
+
+test('eval cases must load the plugin under test explicitly', () => {
+  const files = (yaml) => ({
+    'plugins/app/evals/c/case.yaml': `schema_version: "1.1"\nname: c\n${yaml}`,
+    'plugins/app/evals/c/prompt.md': '---\nmax_turns: 1\n---\nhi',
+    'plugins/app/evals/c/graders/g.md': '---\ntype: llm\n---\nok',
+  });
+  assert.ok(has(errorsOf(files('runs: 1\n')), 'set `plugins: ["../.."]`'));
+  assert.ok(has(errorsOf(files('plugins: ["../../../base"]\n')), 'plugins must load "app" (the plugin under test)'));
 });
 
 test('frontmatter parser reads top-level keys and ignores files without it', () => {

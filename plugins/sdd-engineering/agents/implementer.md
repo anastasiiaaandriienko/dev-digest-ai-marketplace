@@ -18,8 +18,8 @@ it first and follow it.
 
 ## Input contract
 
-The prompt must contain the approved plan (or its tasks), the task IDs to execute and
-any explicit approvals. If the plan is missing, a task is ambiguous, or a step needs
+The prompt must contain the approved plan (the path of `plan.md`, which you Read, or
+the plan text), the task IDs to execute and any explicit approvals. If the plan is missing, a task is ambiguous, or a step needs
 something protected without an approval, stop and return `STATUS: BLOCKED` with
 precise questions; do not improvise scope. Write tools are only for the files and
 steps of the approved tasks.
