@@ -3,7 +3,7 @@ name: run-plan
 description: Manual spec-driven development orchestrator. Drives one feature through spec-creator → approved spec → implementation-planner → cross-model plan review → approved plan → implementer (one task at a time) → architecture review → plan-verifier, stopping at every approval gate. Artifacts live in the SDD folder (default specs/<slug>/ - spec.md, plan.md, verification.md, run-log.md). Invoke explicitly as /run-plan.
 argument-hint: "<slug> [feature request…]  |  <slug> --from <spec|plan|review|implement|arch|verify>"
 disable-model-invocation: true
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs:*), Bash(date -u:*)
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs":*), Bash(node ${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs:*), Bash(date -u:*)
 ---
 
 # run-plan (SDD workflow)
@@ -50,7 +50,8 @@ and no `[NEEDS CLARIFICATION: …]` may stay open. Run
 node "${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs" <SDD folder>/<slug>/spec.md
 ```
 
-Exit 0 = complete. Exit 1 → do **not** offer G1 and do not call the planner: show the
+Run it as one command, exactly in this form (it is pre-approved; don't chain it with
+other commands). Exit 0 = complete. Exit 1 → do **not** offer G1 and do not call the planner: show the
 reported gaps, send them to `sdd-engineering:spec-creator` (S1) or to the user, and stop.
 If Bash is not available, apply the same rules by reading the spec, list every
 requirement with its AC-IDs in the gate summary, and say "coverage checked manually".

@@ -5,6 +5,16 @@ release tags are `sdd-engineering--v<version>`.
 
 ## [Unreleased]
 
+## 1.1.1 — 2026-10-22
+
+### Fixed
+- `/run-plan` can run its coverage check without a permission prompt. The skill writes
+  `node "${CLAUDE_PLUGIN_ROOT}/scripts/check-spec.mjs" …` with a quoted path, which works
+  for install paths with spaces, but 1.1.0 pre-approved only the unquoted form, so every
+  run stopped at a prompt and fell back to the manual check (found in the consumer
+  rollback test). Both forms are now in `allowed-tools`, the skill asks for the command
+  on its own (not chained), and a test checks the rules against the instructed command.
+
 ## 1.1.0 — 2026-10-22
 
 ### Added
