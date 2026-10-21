@@ -168,6 +168,16 @@ test('eval cases need a prompt, graders with a known type and an existing scaffo
   assert.ok(has(errors, 'scaffold_script missing.sh does not exist'));
 });
 
+test('eval cases may load plugins only from inside their own plugin', () => {
+  const caseFiles = (plugins) => ({
+    'plugins/app/evals/c/case.yaml': `schema_version: "1.1"\nname: c\nplugins: ${plugins}\n`,
+    'plugins/app/evals/c/prompt.md': '---\nmax_turns: 1\n---\nhi',
+    'plugins/app/evals/c/graders/g.md': '---\ntype: llm\n---\nok',
+  });
+  assert.ok(has(errorsOf(caseFiles('["../..", "../../../base"]')), 'leaves plugins/app'));
+  assert.deepEqual(errorsOf(caseFiles('["../.."]')), []);
+});
+
 test('frontmatter parser reads top-level keys and ignores files without it', () => {
   assert.deepEqual(frontmatter('---\nname: x\ndescription: "y"\n---\nbody'), { name: 'x', description: 'y' });
   assert.equal(frontmatter('no frontmatter'), null);

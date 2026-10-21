@@ -1,6 +1,7 @@
 node_modules/
 # Local eval runs (claude plugin eval writes here); never commit transcripts.
 plugins/*/evals/results/
+evals/results/
 # Catalog site build output (step 6)
 site/dist/
 site/public/index.json

@@ -2,7 +2,9 @@ schema_version: "1.1"
 name: cross-plugin-dispatch
 description: Smoke test — with sdd-engineering and its dependencies loaded, the namespaced subagents of the dependency plugins can be dispatched by name.
 tags: [smoke, dependencies]
-plugins: ["../..", "../../../engineering-paved-path", "../../../research-tools", "../../../architecture-review"]
+# Run from the repository root (`claude plugin eval . --eval-dir evals`): the root is then the
+# containment root, so all four marketplace plugins can be loaded together.
+plugins: ["../../plugins/sdd-engineering", "../../plugins/engineering-paved-path", "../../plugins/research-tools", "../../plugins/architecture-review"]
 runs: 1
 expected_outcome: The Agent tool is called once with subagent_type research-tools:researcher and once with architecture-review:architecture-reviewer; both return a STATUS line.
 context:
