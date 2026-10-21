@@ -70,6 +70,27 @@ test('run-log-review-model accepts an S3 row on a non-Opus model only', () => {
   assert.equal(re.test(runLog.replace('(MODE: REVIEW) | sonnet |', '(MODE: REVIEW) | opus |')), false);
 });
 
+// Rows as the 1.1.0 eval run (2026-10-21) wrote them: a labelled stage and an annotated model.
+test('run-log graders accept a labelled stage and an annotated model, and reject UNKNOWN', () => {
+  const s1 = graderRegex('spec-from-request/graders/run-log-from-s1.md');
+  const s3 = graderRegex('plan-from-approved-spec/graders/run-log-review-model.md');
+  assert.equal(s1.test('| S1 | — | sdd-engineering:spec-creator | UNKNOWN | UNKNOWN | UNKNOWN | 63296 | 17632 | 8 | UNKNOWN | NEEDS_CLARIFICATION |'), false);
+  assert.equal(s1.test('| S1 spec | — | sdd-engineering:spec-creator | opus (frontmatter default) | frontmatter | UNKNOWN | 63296 | 17632 | 8 | UNKNOWN | DONE |'), true);
+  assert.equal(s3.test('| S3 review | — | sdd-engineering:implementation-planner (MODE: REVIEW) | sonnet | override | UNKNOWN | 26445 | 15803 | 7 | UNKNOWN | DONE |'), true);
+  assert.equal(s3.test('| S2 plan | — | sdd-engineering:implementation-planner | opus (per skill) | frontmatter | UNKNOWN | 1 | 1 | 1 | UNKNOWN | READY |'), false);
+});
+
+test('the run-plan model table matches every agent frontmatter', () => {
+  const plugins = join(evals, '..', '..');
+  const skill = readFileSync(join(evals, '..', 'skills', 'run-plan', 'SKILL.md'), 'utf8');
+  const rows = [...skill.matchAll(/^\s*\| `([a-z-]+):([a-z-]+)` \| (\w+) \|$/gm)];
+  assert.equal(rows.length, 6);
+  for (const [, plugin, agent, model] of rows) {
+    const fm = readFileSync(join(plugins, plugin, 'agents', `${agent}.md`), 'utf8');
+    assert.equal(fm.match(/^model:\s*(\S+)/m)?.[1], model, `${plugin}:${agent}`);
+  }
+});
+
 test('review-on-other-model matches the REVIEW call with a sonnet override only', () => {
   const re = graderRegex('plan-from-approved-spec/graders/review-on-other-model.md');
   const call = (model) =>

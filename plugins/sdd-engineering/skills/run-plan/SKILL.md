@@ -82,11 +82,21 @@ Header, written once:
 
 One row per subagent call, appended right after the call returns:
 
+- **Stage**: exactly `S0`…`S6` (details go in Result).
 - **Task**: the task ID for S4 (and S5 fix rounds), `—` otherwise.
-- **Model**: the model the call ran on. **Model source**: `override` when you passed
-  the Agent `model` parameter, `frontmatter` when you did not (read `model:` in the
-  agent's file). If the environment forces one model for every subagent, write that
-  model and `environment`.
+- **Model**: the model the call ran on; never `UNKNOWN`. **Model source**: `override`
+  when you passed the Agent `model` parameter (write that model), `frontmatter` when you
+  did not (write the agent's frontmatter model from the table below). If the
+  environment forces one model for every subagent, write that model and `environment`.
+
+  | Agent | Frontmatter model |
+  |---|---|
+  | `sdd-engineering:spec-creator` | opus |
+  | `sdd-engineering:implementation-planner` | opus |
+  | `sdd-engineering:implementer` | sonnet |
+  | `sdd-engineering:plan-verifier` | sonnet |
+  | `research-tools:researcher` | sonnet |
+  | `architecture-review:architecture-reviewer` | opus |
 - **Started**: `date -u +%Y-%m-%dT%H:%M:%SZ` run just before the call; `UNKNOWN` without Bash.
 - **Duration ms, Tokens, Tool uses**: copied from the call's task notification.
 - **Cost USD**: only when the notification or the user reports it; otherwise `UNKNOWN`.
