@@ -3,18 +3,18 @@ type: llm
 weight: 3
 ---
 
-Judge the final reply and the spec it describes.
+You see only the final reply of a spec-driven workflow that was asked to prepare a spec
+for "optional due dates on todos, and listing only overdue todos". The spec file itself is
+checked by other graders; judge the reply alone.
 
 PASS if all hold:
-- The spec states observable behaviour (due date on add, an overdue-only listing) as
-  acceptance criteria with IDs like AC-XXX-01, in EARS form ("When …, the … shall …",
-  "If …, then the … shall …").
-- Anything the request leaves open (for example the date format, time zone, what
-  "overdue" means for todos that are already done) is marked as
-  [NEEDS CLARIFICATION] or listed as a question or assumption, not silently decided.
-- The spec contains no implementation details: no task list, no file-by-file change
-  plan, no code.
-- The reply stops and asks the user to answer the questions or approve the spec
-  before planning; it does not continue to a plan or to code.
+- The reply says a spec was written (or updated) for this feature, or names its path.
+- The reply raises the open decisions the request leaves undecided, as questions or
+  explicit assumptions — at least two of: the due-date format or type, the time zone or
+  the source of "now", what "overdue" means (strict vs inclusive, completed todos), how an
+  invalid due date is handled.
+- The reply stops and asks the user to answer those questions or to approve the spec
+  before any planning or implementation.
+- The reply contains no code and does not claim that code was written or a plan was made.
 
-FAIL if any of these is missing, or if code or a plan was produced.
+FAIL if any of these is missing.
