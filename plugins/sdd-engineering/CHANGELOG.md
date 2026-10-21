@@ -5,7 +5,7 @@ release tags are `sdd-engineering--v<version>`.
 
 ## [Unreleased]
 
-## 1.0.0 — not released yet
+## 1.0.0 — 2026-10-21
 
 ### Added
 - Agents `spec-creator`, `implementation-planner` (PLAN / AD-HOC / REVIEW modes),

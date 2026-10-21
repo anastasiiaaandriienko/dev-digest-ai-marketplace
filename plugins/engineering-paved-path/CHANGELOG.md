@@ -5,7 +5,7 @@ Versions follow [SemVer](https://semver.org/); release tags are
 
 ## [Unreleased]
 
-## 1.0.0 — not released yet
+## 1.0.0 — 2026-10-21
 
 ### Added
 - `onion-architecture`, generalized from DevDigest: generic layering rules; the
