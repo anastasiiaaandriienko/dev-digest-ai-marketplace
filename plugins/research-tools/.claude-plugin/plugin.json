@@ -1,0 +1,9 @@
+{
+  "name": "research-tools",
+  "version": "1.0.0",
+  "description": "Generic read-only researcher agent: answers 'is X implemented / where / how', 'what does library Y support' and 'what constrains change Z' with file:line and URL evidence.",
+  "author": { "name": "anastasiiaaandriienko" },
+  "repository": "https://github.com/anastasiiaaandriienko/dev-digest-ai-marketplace",
+  "license": "MIT",
+  "keywords": ["research", "read-only", "agents"]
+}

@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: plan-from-approved-spec
+description: Fixed SDD scenario, stage 2 — the planner builds a traceable plan from an approved spec and the run stops at the plan gate.
+tags: [sdd, smoke, positive]
+plugins: ["../..", "../../../engineering-paved-path", "../../../research-tools", "../../../architecture-review"]
+runs: 3
+expected_outcome: A plan whose every task cites AC-DUE IDs, covers AC-DUE-01..04, uses `npm test` as the check, and stops for plan approval without writing code.
+context:
+  scaffold_script: scaffold.sh

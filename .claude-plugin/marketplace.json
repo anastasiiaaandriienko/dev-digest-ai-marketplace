@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "dev-digest-ai-marketplace",
+  "description": "Team AI harness extracted from DevDigest: a spec-driven development workflow plus the engineering practices, research and architecture-review plugins it depends on.",
+  "owner": {
+    "name": "anastasiiaaandriienko"
+  },
+  "plugins": [
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "Shared engineering skills: layered (onion) architecture, Fastify, Drizzle ORM, PostgreSQL table design and Zod.",
+      "category": "development",
+      "tags": ["architecture", "backend", "typescript", "skills"]
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "Read-only researcher agent that answers codebase and external-documentation questions with file:line and URL evidence.",
+      "category": "productivity",
+      "tags": ["research", "agents", "read-only"]
+    },
+    {
+      "name": "architecture-review",
+      "source": "./plugins/architecture-review",
+      "description": "Read-only architecture reviewer agent that checks a change against the repository's own architecture docs and the shared engineering skills.",
+      "category": "development",
+      "tags": ["review", "architecture", "agents"]
+    },
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec-driven development workflow: spec-creator, implementation-planner, implementer and plan-verifier agents orchestrated by /run-plan, with approval gates, evals and a token retrospective.",
+      "category": "development",
+      "tags": ["sdd", "workflow", "agents", "planning"]
+    }
+  ]
+}
