@@ -5,6 +5,9 @@ spec-driven development workflow and the shared plugins it depends on. It lives 
 from the DevDigest product so the harness and the product keep separate owners and
 release cadences.
 
+**Catalog:** https://anastasiiaaandriienko.github.io/dev-digest-ai-marketplace/ — search
+plugins, skills and agents, read their docs, see dependencies and copy install commands.
+
 ## Plugins
 
 | Plugin | Version | What it gives you | Depends on |
@@ -70,10 +73,13 @@ plugins/<name>/                   one directory per plugin
   .claude-plugin/plugin.json      the plugin's source of truth: name, version, dependencies
   agents/  skills/  evals/        components and behavior evals
   README.md  CHANGELOG.md         required for every plugin
-docs/                             guidelines, security, releases, cost baseline
+docs/                             guidelines, security, releases, cost baseline, catalog site spec
 scripts/validate-marketplace.mjs  structure and content lint (complements `claude plugin validate`)
-scripts/test/                     tests for the lint
-.github/workflows/validate.yml    CI: lint, its tests and `claude plugin validate`
+scripts/build-index.mjs           catalog data: index.json, releases.json, stats.json, Markdown bodies
+scripts/test/                     tests for the lint and the index builder
+site/                             catalog site (React + TypeScript + Vite), see docs/SITE-SPEC.md
+.github/workflows/validate.yml    CI: lint, tests, `claude plugin validate`, catalog build
+.github/workflows/pages.yml       builds the catalog from main and deploys it to GitHub Pages
 ```
 
 ## Contributing
@@ -83,8 +89,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and
 
 ```sh
 npm run validate        # structure and content lint, no dependencies
-npm test                # tests for the lint
+npm test                # tests for the lint and the index builder
 claude plugin validate .
+cd site && npm ci && npm test && npm run build   # catalog site
 ```
 
 ## License

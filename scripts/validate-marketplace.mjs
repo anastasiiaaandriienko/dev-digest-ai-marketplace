@@ -5,12 +5,17 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseFrontmatter } from './lib/frontmatter.mjs';
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 const CARET = /^\^\d+\.\d+\.\d+$/;
-const TEXT_EXT = new Set(['.md', '.json', '.yaml', '.yml', '.mjs', '.js', '.ts', '.sh', '.txt', '']);
+const TEXT_EXT = new Set(['.md', '.json', '.yaml', '.yml', '.mjs', '.js', '.ts', '.tsx', '.jsx', '.css', '.html', '.sh', '.txt', '']);
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'results', 'dist']);
+/** Generated or third-party machine files that are not authored content. */
+const SKIP_FILES = new Set(['package-lock.json']);
+/** Build output of scripts/build-index.mjs (git-ignored; regenerated from the sources). */
+const GENERATED = [/^site\/public\/(index|releases|stats)\.json$/, /^site\/public\/bodies\//];
 
 /** Product-specific names that must not appear inside plugin components. */
 const PRODUCT_SPECIFIC = [/devdigest/i, /reviewer-core/, /@devdigest\//, /\bserver\/src\//, /\bclient\/src\//];
@@ -202,8 +207,9 @@ export function validateMarketplace(root) {
   // ---- forbidden content ----
   for (const file of walk(root)) {
     const r = rel(file);
-    const ext = r.includes('.') ? r.slice(r.lastIndexOf('.')) : '';
-    if (!TEXT_EXT.has(ext) || r.endsWith('LICENSE')) continue;
+    const base = r.slice(r.lastIndexOf('/') + 1);
+    const ext = base.includes('.') ? base.slice(base.lastIndexOf('.')) : '';
+    if (!TEXT_EXT.has(ext) || base === 'LICENSE' || SKIP_FILES.has(base) || GENERATED.some((g) => g.test(r))) continue;
     const text = readFileSync(file, 'utf8');
     const lines = text.split('\n');
     const isComponent =
@@ -268,14 +274,7 @@ function readJson(path, err, rel) {
 
 /** Top-level `key: value` pairs of a leading YAML frontmatter block (enough for our checks). */
 export function frontmatter(text) {
-  const m = text.replace(/\r\n/g, '\n').match(/^---\n([\s\S]*?)\n---(\n|$)/);
-  if (!m) return null;
-  const out = {};
-  for (const line of m[1].split('\n')) {
-    const kv = line.match(/^([A-Za-z_][\w-]*)\s*:\s*(.*)$/);
-    if (kv) out[kv[1]] = kv[2].replace(/^['"]|['"]$/g, '').trim() || true;
-  }
-  return out;
+  return parseFrontmatter(text).data;
 }
 
 function* walk(dir) {

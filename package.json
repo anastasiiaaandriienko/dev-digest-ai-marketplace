@@ -6,6 +6,7 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "validate": "node scripts/validate-marketplace.mjs",
+    "build:index": "node scripts/build-index.mjs",
     "test": "node --test \"scripts/test/**/*.test.mjs\""
   }
 }

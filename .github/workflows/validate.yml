@@ -13,21 +13,21 @@ jobs:
     name: Structure lint and its tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - name: Lint (scripts/validate-marketplace.mjs)
         run: npm run validate
-      - name: Lint tests
+      - name: Lint and index tests
         run: npm test
 
   claude-validate:
     name: claude plugin validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       # Only the validator is used here: it reads manifests and makes no model calls,
@@ -44,3 +44,24 @@ jobs:
             claude plugin validate "$dir" --strict
             echo "::endgroup::"
           done
+
+  build-site:
+    name: Build catalog site
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # tags feed releases.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - name: Tests
+        run: npm test
+      - name: Build (index + type check + bundle)
+        run: npm run build
